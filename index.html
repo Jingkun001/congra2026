@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>智能祝福生成器 - 个性化新年祝福语生成工具</title>
+    
+    <!-- SEO 基础标签 -->
+    <meta name="description" content="智能祝福生成器 - 个性化新年祝福语生成工具。轻松生成10种风格的专属祝福语，支持生肖年份选择、对象定制、多样化主题。">
+    <meta name="keywords" content="祝福语,新年祝福,春节祝福,智能生成,生肖,贺岁,祝福">
+    <meta name="author" content="MiniMax Agent">
+    
+    <!-- Open Graph 标签 - 用于微信分享 -->
+    <meta property="og:title" content="智能祝福生成器 - 个性化新年祝福语生成工具">
+    <meta property="og:description" content="轻松生成专属祝福语！10种风格、精准匹配、生肖定制，让您的祝福更贴心。">
+    <meta property="og:image" content="https://example.com/imgs/share_card.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="智能祝福生成器">
+    
+    <!-- Twitter Card 标签 -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="智能祝福生成器 - 个性化新年祝福语生成工具">
+    <meta name="twitter:description" content="轻松生成专属祝福语！10种风格、精准匹配、生肖定制，让您的祝福更贴心。">
+    <meta name="twitter:image" content="https://example.com/imgs/share_card.png">
+    
+    <!-- 微信分享相关 -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="format-detection" content="email=no">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #fef7f7 0%, #fdf2f8 50%, #fef2f2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* 渐变背景 */
+        .bg-gradient-gold {
+            background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
+        }
+        .bg-gradient-red {
+            background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%);
+        }
+        .bg-gradient-card {
+            background: linear-gradient(145deg, #ffffff 0%, #fef2f2 100%);
+        }
+
+        /* 动画效果 */
+        .fade-in-right {
+            animation: fadeInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(196, 30, 58, 0); }
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .active-scale:active {
+            transform: scale(0.95);
+        }
+
+        /* 加载动画 */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #C41E3A;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 选中状态 */
+        .selected-card {
+            border: 2px solid #C41E3A;
+            background: linear-gradient(145deg, #fff1f2 0%, #fef2f2 100%);
+            transform: scale(1.02);
+        }
+
+        /* 生肖图标动画 */
+        .zodiac-icon {
+            transition: all 0.3s ease;
+        }
+        .zodiac-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* 主题标签动画 */
+        .theme-tag {
+            transition: all 0.2s ease;
+        }
+        .theme-tag:hover {
+            transform: translateY(-1px);
+        }
+        .theme-tag.selected {
+            background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Toast 样式 */
+        .toast {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        /* 结果卡片样式 */
+        .result-card {
+            background: linear-gradient(145deg, #ffffff 0%, #fef7f7 100%);
+            border: 1px solid rgba(196, 30, 58, 0.1);
+            transition: all 0.3s ease;
+        }
+        .result-card:hover {
+            border-color: rgba(196, 30, 58, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 分享按钮样式 */
+        .share-button {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+        .share-button:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col relative">
+
+    <!-- 顶部导航 -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-red-100">
+        <div class="max-w-md mx-auto px-4 py-3">
+            <div class="flex justify-between items-center mb-3">
+                <h1 class="text-lg font-bold text-red-800 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-red rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </div>
+                    智能祝福生成器
+                </h1>
+                <span id="step-indicator" class="text-xs font-semibold text-red-500 bg-red-50 px-3 py-1.5 rounded-full">Step 1/4</span>
+            </div>
+            <!-- 进度条 -->
+            <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full bg-gradient-red transition-all duration-700 ease-out" style="width: 25%"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-1 max-w-md mx-auto w-full p-4 pb-24 overflow-y-auto no-scrollbar relative">
+        
+        <!-- Step 1: 生肖年份选择 -->
+        <section id="step-1" class="fade-in-right">
+            <h2 class="text-xl font-bold text-gray-800 mb-1">请选择生肖年份</h2>
+            <p class="text-sm text-gray-500 mb-6">选择马年～猪年，定制专属吉祥祝福</p>
+            
+            <div class="grid grid-cols-3 gap-3" id="year-grid">
+                <!-- 由JS动态生成 -->
+            </div>
+        </section>
+
+        <!-- Step 2: 祝福对象选择 -->
+        <section id="step-2" class="hidden fade-in-right">
+            <div class="flex items-center gap-2 mb-1">
+                <button onclick="prevStep()" class="p-1 -ml-1 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h2 class="text-xl font-bold text-gray-800">发送给谁？</h2>
+            </div>
+            <p class="text-sm text-gray-500 mb-6">不同身份匹配不同语气的祝福</p>
+
+            <!-- 关系大类 Tab -->
+            <div class="flex bg-gray-100 rounded-xl p-1 mb-6 shadow-inner">
+                <button onclick="switchRelationTab('work')" class="relation-tab flex-1 py-3 text-sm font-medium rounded-lg text-center transition-all bg-white text-red-600 shadow-sm" id="tab-work">职场</button>
+                <button onclick="switchRelationTab('family')" class="relation-tab flex-1 py-3 text-sm font-medium rounded-lg text-center transition-all text-gray-500" id="tab-family">亲友</button>
+                <button onclick="switchRelationTab('business')" class="relation-tab flex-1 py-3 text-sm font-medium rounded-lg text-center transition-all text-gray-500" id="tab-business">商务</button>
+            </div>
+
+            <!-- 子类选项 -->
+            <div id="relation-subtypes" class="space-y-3">
+                <!-- 动态生成 -->
+            </div>
+        </section>
+
+        <!-- Step 3: 主题个性化 -->
+        <section id="step-3" class="hidden fade-in-right">
+            <div class="flex items-center gap-2 mb-1">
+                <button onclick="prevStep()" class="p-1 -ml-1 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <h2 class="text-xl font-bold text-gray-800">定制细节</h2>
+            </div>
+            <p class="text-sm text-gray-500 mb-6">让祝福更具心意</p>
+
+            <div class="space-y-6">
+                <!-- 对方称呼 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">对方称呼（可选）</label>
+                    <input type="text" id="custom-name" placeholder="例如：张总、王姨、李雷" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all bg-white shadow-sm">
+                </div>
+
+                <!-- 祝福主题（动态） -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">核心祝愿（多选）</label>
+                    <div class="flex flex-wrap gap-2" id="theme-options">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 数量选择 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">生成数量</label>
+                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded-xl border border-gray-200">
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-white flex-1 justify-center transition-all">
+                            <input type="radio" name="count" value="5" class="text-red-600 focus:ring-red-500" checked>
+                            <span class="text-sm font-medium">5条 精选</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-white flex-1 justify-center transition-all">
+                            <input type="radio" name="count" value="10" class="text-red-600 focus:ring-red-500">
+                            <span class="text-sm font-medium">10条 丰富</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer p-2 rounded-lg hover:bg-white flex-1 justify-center transition-all">
+                            <input type="radio" name="count" value="15" class="text-red-600 focus:ring-red-500">
+                            <span class="text-sm font-medium">15条 海量</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4: 结果生成 -->
+        <section id="step-4" class="hidden fade-in-right pb-10">
+            <!-- 头部状态 -->
+            <div class="text-center mb-6" id="loading-state">
+                <div class="spinner mx-auto mb-4"></div>
+                <p class="text-gray-600 font-medium">AI正在为您斟酌词句...</p>
+            </div>
+
+            <div id="result-container" class="hidden space-y-4">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900">生成结果</h2>
+                        <p class="text-xs text-gray-500 mt-1">点击卡片或按钮即可复制</p>
+                    </div>
+                    <button onclick="generateBlessings()" class="text-sm text-red-600 font-medium flex items-center gap-1 active-scale bg-red-50 px-3 py-1.5 rounded-full hover:bg-red-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        换一批
+                    </button>
+                </div>
+                
+                <div id="blessing-list" class="space-y-3">
+                    <!-- 动态生成结果卡片 -->
+                </div>
+
+                <div class="mt-8 flex gap-3">
+                     <button onclick="restartSelection()" class="flex-1 py-3 border border-gray-300 rounded-xl text-gray-600 font-medium bg-white hover:bg-gray-50 transition-colors">
+                        重新选择
+                     </button>
+                     <button onclick="generateBlessings()" class="flex-1 py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors">
+                        换一批
+                     </button>
+                </div>
+
+                <!-- 分享按钮区域 -->
+                <div id="share-section" class="mt-6">
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200">
+                        <div class="text-center">
+                            <h3 class="text-sm font-medium text-gray-800 mb-2">分享给朋友</h3>
+                            <button onclick="showShareMenu()" class="share-button text-white font-medium py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 mx-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                </svg>
+                                立即分享
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2">让朋友们也体验智能祝福生成器</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 底部操作栏 -->
+    <footer id="action-bar" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 p-4 max-w-md mx-auto z-40">
+        <button id="next-btn" onclick="nextStep()" class="w-full bg-gradient-red text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-transform flex justify-center items-center gap-2 text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            下一步
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+        </button>
+    </footer>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 toast text-white px-6 py-3 rounded-full text-sm font-medium opacity-0 pointer-events-none transition-opacity duration-300 z-50 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span id="toast-msg">已复制到剪贴板</span>
+    </div>
+
+    <!-- 脚本逻辑 -->
+    <script>
+        // === 数据配置 ===
+        const YEARS = [
+            { 
+                year: 2026, 
+                animal: '马', 
+                icon: 'M6 12a6 6 0 016-6 6 6 0 016 6 6 6 0 01-6 6 6 6 0 01-6-6zm3-2l6 3-6 3-6-3 6-3zm-1 2l-5 3v6h16v-6l-5-3-1-1-5 3zm-4-1l1-1 5-3 5 3 1 1v2H9v-2z', 
+                name: '骏马奔腾'
+            },
+            { 
+                year: 2027, 
+                animal: '羊', 
+                icon: 'M12 2C10.9 2 10 2.9 10 4C10 5.1 10.9 6 12 6C13.1 6 14 5.1 14 4C14 2.9 13.1 2 12 2ZM6 12a6 6 0 0112 0 6 6 0 01-12 0zm6-3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm6 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z', 
+                name: '三羊开泰'
+            },
+            { 
+                year: 2028, 
+                animal: '猴', 
+                icon: 'M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7l-2-1c-2.4-1.2-5.2-1.2-7.6 0L10 8.6L7.6 6C5.2 4.8 2.4 4.8 0 6l-2 1v2l2 1c2.4 1.2 5.2 1.2 7.6 0L10 9.4L12.4 12c2.4 1.2 5.2 1.2 7.6 0l2-1V9z M8 15l2 1v2l-2-1v-2zm8 0l2 1v2l-2-1v-2z M16 7l-1-1-3 3-3-3-1 1 4 4 4-4z', 
+                name: '金猴献瑞'
+            },
+            { 
+                year: 2029, 
+                animal: '鸡', 
+                icon: 'M6 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2zm8-12V7c0-1.1-.9-2-2-2s-2 .9-2 2v0c0 1.1.9 2 2 2s2-.9 2-2zm0 8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2s-2 .9-2 2v6c0 1.1.9 2 2 2zm6-4c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2zm0 2c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2s-2 .9-2 2v2c0 1.1.9 2 2 2z', 
+                name: '金鸡报晓'
+            },
+            { 
+                year: 2030, 
+                animal: '狗', 
+                icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z M8 12a4 4 0 118 0 4 4 0 01-8 0zm6 2a2 2 0 100 4 2 2 0 000-4z', 
+                name: '瑞犬送福'
+            },
+            { 
+                year: 2031, 
+                animal: '猪', 
+                icon: 'M12 2C13.1 2 14 2.9 14 4V6H10V4c0-1.1.9-2 2-2zm6 4v8a4 4 0 11-8 0V6h8zm-2 0H8V8a2 2 0 004 0V6zm-8 4v2a4 4 0 008 0v-2H8zm8 2v2a2 2 0 01-4 0v-2h4zm-6 0v2a6 6 0 0112 0v-2H10z', 
+                name: '金猪纳福'
+            }
+        ];
+
+        const RELATIONS = {
+            work: {
+                label: '职场关系',
+                subtypes: {
+                    '直属领导': { themes: ['步步高升', '领导有方', '升官发财', '前途无量'], emoji: '👑💼📈' },
+                    '大老板': { themes: ['骏业日新', '财源广进', '鸿图大展', '生意兴隆'], emoji: '💎🏢💰' },
+                    '同事': { themes: ['工作顺利', '团队和谐', '互相帮助', '共同进步'], emoji: '🤝💪🎯' },
+                    'HR': { themes: ['招聘顺利', '人才济济', '团队建设', '企业文化'], emoji: '👥📋🌟' },
+                    '重要客户': { themes: ['合作愉快', '互利共赢', '长久合作', '携手共进'], emoji: '🤝💼🎁' }
+                }
+            },
+            family: {
+                label: '亲友关系',
+                subtypes: {
+                    '父母': { themes: ['身体健康', '万寿无疆', '福如东海', '寿比南山'], emoji: '🍵🙏🎋' },
+                    '长辈': { themes: ['身体健康', '福寿双全', '长命百岁', '家有一宝'], emoji: '🧨👍💖' },
+                    '平辈亲戚': { themes: ['学业进步', '姻缘美满', '早生贵子', '阖家欢乐'], emoji: '🎊🎉🌹' },
+                    '好友': { themes: ['友谊长存', '前程似锦', '心想事成', '快乐每一天'], emoji: '🐒赛雷🍻🎉' },
+                    '晚辈': { themes: ['学业进步', '健康成长', '前程似锦', '金榜题名'], emoji: '🎓🌟💪' }
+                }
+            },
+            business: {
+                label: '商务关系',
+                subtypes: {
+                    '合作伙伴': { themes: ['骏业日新', '互利共赢', '财源滚滚', '合作愉快'], emoji: '☕️🤝💼' },
+                    '供应商': { themes: ['生意兴隆', '供货顺利', '长期合作', '互利共赢'], emoji: '🚚📦🤝' },
+                    '投资人': { themes: ['投资收益', '财源滚滚', '事业发展', '回报丰厚'], emoji: '💰📊🚀' }
+                }
+            }
+        };
+
+        const STYLES = [
+            { id: 1, name: '传统典雅', desc: '四字成语，庄重' },
+            { id: 2, name: '幽默轻松', desc: '网络热梗，有趣' },
+            { id: 3, name: '温情走心', desc: '情感真挚，感人' },
+            { id: 4, name: '务实干练', desc: '简短有力，高效' },
+            { id: 5, name: '地域特色', desc: '民俗风味' },
+            { id: 6, name: '文艺古风', desc: '诗词歌赋' },
+            { id: 7, name: '对仗工整', desc: '对联形式' },
+            { id: 8, name: '颜文字派', desc: '可爱符号' },
+            { id: 9, name: '职场专业', desc: '展望未来' },
+            { id: 10, name: '家庭温馨', desc: '团圆和睦' }
+        ];
+
+        const ZODIAC_KEYWORDS = {
+            '马': { adj: '马到成功', noun: '骏马', action: '马年如意' },
+            '羊': { adj: '三阳开泰', noun: '吉羊', action: '羊年大吉' },
+            '猴': { adj: '金猴献瑞', noun: '灵猴', action: '猴年大吉' },
+            '鸡': { adj: '金鸡报晓', noun: '雄鸡', action: '鸡年大吉' },
+            '狗': { adj: '旺旺生财', noun: '瑞犬', action: '狗年大吉' },
+            '猪': { adj: '诸事顺利', noun: '金猪', action: '猪年大吉' },
+        };
+
+        // === 状态管理 ===
+        let state = {
+            step: 1,
+            year: null,
+            relationCat: 'work',
+            relationSub: '',
+            customName: '',
+            themes: [],
+            count: 5
+        };
+
+        // === 初始化 ===
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderYearGrid();
+            renderRelationSubtypes();
+            renderThemes();
+            updateUI();
+            initShareConfig();
+        });
+
+        // === 核心逻辑函数 ===
+
+        // 1. 渲染年份网格
+        function renderYearGrid() {
+            const container = document.getElementById('year-grid');
+            container.innerHTML = YEARS.map(y => `
+                <div onclick="selectYear(${y.year})" 
+                     class="cursor-pointer bg-gradient-card rounded-2xl p-4 shadow-lg border border-gray-100 flex flex-col items-center justify-center transition-all card-hover zodiac-icon ${state.year?.year === y.year ? 'selected-card' : ''}" 
+                     data-year="${y.year}">
+                    <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="${y.icon}"/>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-base text-gray-800">${y.year}</span>
+                    <span class="text-sm text-gray-500 font-medium">${y.animal}年</span>
+                    <span class="text-xs text-red-400 mt-1">${y.name}</span>
+                </div>
+            `).join('');
+            validateStep();
+        }
+
+        // 2. 选择年份
+        function selectYear(yearVal) {
+            state.year = YEARS.find(y => y.year === yearVal);
+            renderYearGrid();
+            saveState();
+            validateStep();
+        }
+
+        // 3. 切换关系Tab
+        function switchRelationTab(cat) {
+            state.relationCat = cat;
+            state.relationSub = '';
+            state.themes = [];
+            
+            // 更新Tab样式
+            document.querySelectorAll('.relation-tab').forEach(el => {
+                if(el.id === `tab-${cat}`) {
+                    el.classList.remove('text-gray-500');
+                    el.classList.add('bg-white', 'text-red-600', 'shadow-sm');
+                } else {
+                    el.classList.add('text-gray-500');
+                    el.classList.remove('bg-white', 'text-red-600', 'shadow-sm');
+                }
+            });
+
+            renderRelationSubtypes();
+            renderThemes();
+            validateStep();
+        }
+
+        // 4. 渲染关系子类
+        function renderRelationSubtypes() {
+            const container = document.getElementById('relation-subtypes');
+            const relations = RELATIONS[state.relationCat];
+            const subtypes = Object.keys(relations.subtypes);
+            
+            container.innerHTML = subtypes.map(sub => `
+                <div onclick="selectSubtype('${sub}')" 
+                     class="w-full px-4 py-4 bg-white rounded-xl border text-left font-medium transition-all card-hover active:scale-[0.98] ${state.relationSub === sub ? 'border-red-500 bg-red-50 text-red-700 selected-card' : 'border-gray-200 text-gray-700 hover:border-red-200'}">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">${sub}</span>
+                        ${state.relationSub === sub ? `
+                        <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            validateStep();
+        }
+
+        function selectSubtype(sub) {
+            state.relationSub = sub;
+            renderRelationSubtypes();
+            renderThemes();
+            saveState();
+            validateStep();
+        }
+
+        // 5. 渲染主题选项
+        function renderThemes() {
+            const container = document.getElementById('theme-options');
+            const relations = RELATIONS[state.relationCat];
+            const subThemes = relations.subtypes[state.relationSub]?.themes || [];
+            
+            const currentThemes = state.themes || [];
+            
+            container.innerHTML = subThemes.map(theme => `
+                <button onclick="toggleTheme('${theme}')" 
+                        class="px-4 py-2 rounded-full text-sm border transition-all theme-tag ${currentThemes.includes(theme) ? 'selected' : 'bg-white border-gray-300 text-gray-600'}">
+                    ${theme}
+                </button>
+            `).join('');
+            validateStep();
+        }
+
+        function toggleTheme(theme) {
+            if (state.themes.includes(theme)) {
+                state.themes = state.themes.filter(t => t !== theme);
+            } else {
+                state.themes.push(theme);
+            }
+            renderThemes();
+            saveState();
+            validateStep();
+        }
+
+        // === 导航逻辑 ===
+        function nextStep() {
+            if (state.step < 4) {
+                state.step++;
+                if(state.step === 4) {
+                    generateBlessings();
+                }
+                updateUI();
+                saveState();
+            }
+        }
+
+        function prevStep() {
+            if (state.step > 1) {
+                state.step--;
+                updateUI();
+                saveState();
+            }
+        }
+
+        function updateUI() {
+            const progress = state.step * 25;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('step-indicator').innerText = `Step ${state.step}/4`;
+
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`step-${i}`);
+                if (i === state.step) {
+                    el.classList.remove('hidden');
+                    el.classList.remove('fade-in-right');
+                    void el.offsetWidth;
+                    el.classList.add('fade-in-right');
+                } else {
+                    el.classList.add('hidden');
+                }
+            }
+
+            const btn = document.getElementById('next-btn');
+            if (state.step === 4) {
+                document.getElementById('action-bar').classList.add('hidden');
+            } else {
+                document.getElementById('action-bar').classList.remove('hidden');
+                validateStep();
+            }
+            
+            if(state.step === 3) {
+                document.getElementById('custom-name').value = state.customName;
+            }
+        }
+
+        function validateStep() {
+            const btn = document.getElementById('next-btn');
+            let isValid = false;
+            
+            if (state.step === 1 && state.year) isValid = true;
+            if (state.step === 2 && state.relationSub) isValid = true;
+            if (state.step === 3) isValid = true;
+
+            btn.disabled = !isValid;
+            btn.innerHTML = state.step === 3 ? 
+                `生成祝福 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>` 
+                : 
+                `下一步 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>`;
+        }
+
+        // 修复：完全重置应用状态并回到首页
+        function resetApp() {
+            localStorage.removeItem('blessingState');
+            state = { step: 1, year: null, relationCat: 'work', relationSub: '', customName: '', themes: [], count: 5 };
+            renderYearGrid();
+            renderRelationSubtypes();
+            renderThemes();
+            updateUI();
+        }
+
+        // 修复：重新选择功能 - 清除localStorage并完全重置状态
+        function restartSelection() {
+            // 清除本地存储
+            localStorage.removeItem('blessingState');
+            // 完全重置状态对象
+            state = { step: 1, year: null, relationCat: 'work', relationSub: '', customName: '', themes: [], count: 5 };
+            // 重置Tab样式
+            document.querySelectorAll('.relation-tab').forEach(el => {
+                el.classList.remove('bg-white', 'text-red-600', 'shadow-sm');
+                el.classList.add('text-gray-500');
+            });
+            document.getElementById('tab-work').classList.add('bg-white', 'text-red-600', 'shadow-sm');
+            document.getElementById('tab-work').classList.remove('text-gray-500');
+            // 重新渲染所有内容
+            renderYearGrid();
+            renderRelationSubtypes();
+            renderThemes();
+            updateUI();
+            // 清空输入框
+            document.getElementById('custom-name').value = '';
+            // 重置数量选择
+            document.querySelector('input[name="count"][value="5"]').checked = true;
+        }
+
+        // === 核心生成逻辑 ===
+        function generateBlessings() {
+            state.customName = document.getElementById('custom-name').value.trim();
+            const countRadio = document.querySelector('input[name="count"]:checked');
+            state.count = countRadio ? parseInt(countRadio.value) : 5;
+            saveState();
+
+            const loading = document.getElementById('loading-state');
+            const result = document.getElementById('result-container');
+            loading.classList.remove('hidden');
+            result.classList.add('hidden');
+
+            setTimeout(() => {
+                const list = [];
+                const styles = shuffleArray([...STYLES]);
+                
+                for (let i = 0; i < state.count; i++) {
+                    const style = styles[i % styles.length];
+                    list.push(createSingleBlessing(style));
+                }
+
+                renderResultList(list);
+                loading.classList.add('hidden');
+                result.classList.remove('hidden');
+                result.classList.add('fade-in-right');
+            }, 800);
+        }
+
+        function createSingleBlessing(style) {
+            const zWord = ZODIAC_KEYWORDS[state.year.animal];
+            const name = state.customName ? state.customName : getRelationAddress(state.relationSub);
+            const theme = state.themes.length > 0 ? state.themes[Math.floor(Math.random() * state.themes.length)] : '万事如意';
+            const emojiSet = RELATIONS[state.relationCat].subtypes[state.relationSub]?.emoji || '🎉🌟💖';
+            
+            let text = "";
+
+            switch (style.id) {
+                case 1: // 传统典雅
+                    text = `${emojiSet} ${state.year.animal}年伊始，万象更新春意浓。\n${zWord.noun}送福至，瑞气盈门好运来。\n${name}${theme}，福暖四季顺遂安康，步步高升展宏图！ ${emojiSet}`;
+                    break;
+                case 2: // 幽默轻松
+                    text = `🎊 新年新气象，${state.year.year}年到啦！${emojiSet}\n${zWord.action}，${name}可要${theme}哦！\n芝麻开花节节高，开心快乐每一天！💫 愿所有美好都如期而至～ ${emojiSet}`;
+                    break;
+                case 3: // 温情走心
+                    text = `${emojiSet} 时光荏苒，又是一年${state.year.animal}年到。\n${name}，感谢一路相伴与默默支持。\n愿新的一年${theme}，幸福满满，平安健康每一天！\n愿所有的美好都与你相伴前行～ ${emojiSet}`;
+                    break;
+                case 4: // 务实干练
+                    text = `💼 值此${state.year.year}新年之际，${zWord.adj}事业兴。\n${emojiSet} ${name}${theme}，工作高效业绩佳！\n龙马精神展雄姿，再创辉煌新高度！ ${emojiSet}`;
+                    break;
+                case 5: // 地域特色
+                    text = `🏮 ${state.year.animal}年锣鼓喧天，红红火火迎新春！\n${emojiSet} ${zWord.noun}送福到，好运连连绕身边。\n${name}${theme}，日子过得红红火火，如意吉祥乐无边！ ${emojiSet}`;
+                    break;
+                case 6: // 文艺古风
+                    text = `🌸 ${state.year.animal}年春意浓，梅开二度报新春。\n✨ 浅喜若${theme}，静待春归好时光。\n愿${name}眉目舒展心自宽，${zWord.action}，\n不负韶华不负卿，共谱人生新华章！ ${emojiSet}`;
+                    break;
+                case 7: // 对仗工整
+                    text = `📜 上联：${state.year.animal}年${zWord.adj}迎新春，\n🏮 下联：${name}${theme}万事兴。\n✨ 横批：${state.year.year}大吉大利，行运一条龙！ ${emojiSet}`;
+                    break;
+                case 8: // 颜文字派
+                    text = `( ^_^)／ ${state.year.animal}年到啦～ ${emojiSet}\n祝${name}${theme}哦 ♪( ´θ｀)ノ\n每天都要开心快乐呀～ ${zWord.adj} ★\n快乐像糖果一样甜甜蜜蜜～ 💕 ${emojiSet}`;
+                    break;
+                case 9: // 职场专业
+                    text = `💎 值此${state.year.year}${state.year.animal}年佳节，${zWord.adj}前程似锦。\n🤝 ${emojiSet} ${name}${theme}，携手共进创佳绩！\n龙腾虎跃展雄风，共铸辉煌新篇章！ ${emojiSet}`;
+                    break;
+                case 10: // 家庭温馨
+                    text = `🏠 ${state.year.animal}年到，福气照，团圆美满乐逍遥！\n${emojiSet} ${zWord.noun}进门好，${name}${theme}全家好。\n一家人和和美美，平安喜乐，笑口常开！\n愿爱意满满，温暖如春～ ${emojiSet}`;
+                    break;
+            }
+            
+            return { style: style.name, content: text };
+        }
+
+        function getRelationAddress(subtype) {
+            const map = {
+                '直属领导': '您', '大老板': '您', '同事': '同事', 'HR': '您', '重要客户': '您',
+                '父母': '爸妈', '长辈': '长辈', '平辈亲戚': '亲人', '好友': '好友', '晚辈': '孩子',
+                '合作伙伴': '贵方', '供应商': '贵司', '投资人': '您'
+            };
+            return map[subtype] || '您';
+        }
+
+        function renderResultList(list) {
+            const container = document.getElementById('blessing-list');
+            container.innerHTML = list.map((item, index) => `
+                <div class="result-card p-5 rounded-xl relative group cursor-pointer select-all" onclick="copyText(this, '${item.content.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-semibold text-red-500 bg-red-50 px-3 py-1 rounded-full">${item.style}</span>
+                        <button onclick="event.stopPropagation(); copyText(this, '${item.content.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')" class="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-full hover:bg-red-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-gray-800 text-base leading-relaxed whitespace-pre-line pr-6">${item.content}</p>
+                </div>
+            `).join('');
+        }
+
+        // 辅助工具
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 复制功能
+        function copyText(element, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+                const originalHTML = element.tagName === 'BUTTON' ? element.innerHTML : '';
+                if(element.tagName === 'BUTTON') {
+                    element.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+                    setTimeout(() => {
+                        element.innerHTML = originalHTML;
+                    }, 2000);
+                }
+            }).catch(err => {
+                console.error('Copy failed', err);
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("Copy");
+                textArea.remove();
+                showToast();
+            });
+            
+            console.log(`[埋点] Copied blessing: ${text.substring(0, 15)}...`);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2000);
+        }
+
+        // === 微信分享功能 ===
+        
+        // 初始化分享配置
+        function initShareConfig() {
+            // 设置分享URL（如果部署到服务器，这里应该是实际URL）
+            const currentUrl = window.location.href.split('#')[0];
+            const ogMeta = document.querySelector('meta[property="og:url"]');
+            if (ogMeta) {
+                ogMeta.setAttribute('content', currentUrl);
+            }
+            
+            // 配置分享内容
+            const shareData = {
+                title: '智能祝福生成器 - 个性化新年祝福语生成工具',
+                desc: '轻松生成专属祝福语！10种风格、精准匹配、生肖定制，让您的祝福更贴心。',
+                link: currentUrl,
+                imgUrl: currentUrl.split('/').slice(0, -1).join('/') + '/imgs/share_card.png'
+            };
+            
+            // 微信环境检测和分享配置
+            if (isWeChat()) {
+                configureWeChatShare(shareData);
+            }
+        }
+
+        // 检测是否在微信环境中
+        function isWeChat() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.indexOf('micromessenger') !== -1;
+        }
+
+        // 配置微信分享
+        function configureWeChatShare(shareData) {
+            // 这里可以集成微信JSSDK
+            // 注意：需要微信开发者账号和JSSDK配置
+            
+            // 模拟微信分享功能
+            if (typeof wx !== 'undefined') {
+                wx.ready(() => {
+                    // 分享给朋友
+                    wx.updateAppMessageShareData({
+                        title: shareData.title,
+                        desc: shareData.desc,
+                        link: shareData.link,
+                        imgUrl: shareData.imgUrl,
+                        success: () => {
+                            console.log('分享成功');
+                        },
+                        cancel: () => {
+                            console.log('分享取消');
+                        }
+                    });
+
+                    // 分享到朋友圈
+                    wx.updateTimelineShareData({
+                        title: shareData.title,
+                        link: shareData.link,
+                        imgUrl: shareData.imgUrl,
+                        success: () => {
+                            console.log('朋友圈分享成功');
+                        },
+                        cancel: () => {
+                            console.log('朋友圈分享取消');
+                        }
+                    });
+                });
+            }
+        }
+
+        // 显示分享菜单
+        function showShareMenu() {
+            const shareData = {
+                title: '智能祝福生成器 - 个性化新年祝福语生成工具',
+                desc: '轻松生成专属祝福语！10种风格、精准匹配、生肖定制，让您的祝福更贴心。',
+                url: window.location.href.split('#')[0],
+                image: 'imgs/share_card.png'
+            };
+
+            if (navigator.share) {
+                // 使用原生分享API
+                navigator.share({
+                    title: shareData.title,
+                    text: shareData.desc,
+                    url: shareData.url
+                }).then(() => {
+                    showToast('分享成功！');
+                }).catch((error) => {
+                    console.log('分享失败:', error);
+                    showCopyShareLink();
+                });
+            } else {
+                showCopyShareLink();
+            }
+        }
+
+        // 显示复制分享链接
+        function showCopyShareLink() {
+            const shareUrl = window.location.href.split('#')[0];
+            const shareText = `智能祝福生成器 - 个性化新年祝福语生成工具\n${shareUrl}`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showToast('分享链接已复制到剪贴板！');
+                });
+            } else {
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = shareText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('分享链接已复制到剪贴板！');
+            }
+        }
+
+        // LocalStorage 管理
+        function saveState() {
+            try {
+                localStorage.setItem('blessingState', JSON.stringify(state));
+            } catch(e) {
+                console.log('Storage failed');
+            }
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('blessingState');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if(parsed.step) state.step = parsed.step;
+                    if(parsed.year) state.year = parsed.year;
+                    if(parsed.relationCat) state.relationCat = parsed.relationCat;
+                    if(parsed.relationSub) state.relationSub = parsed.relationSub;
+                    if(parsed.customName) state.customName = parsed.customName;
+                    if(parsed.themes) state.themes = parsed.themes;
+                    if(parsed.count) state.count = parsed.count;
+                } catch(e) {
+                    console.error('Load state failed', e);
+                }
+            }
+        }
+
+        // 埋点模拟
+        window.addEventListener('beforeunload', () => {
+            console.log(`[埋点] User left at step ${state.step}`);
+        });
+
+    </script>
+</body>
+</html>
